@@ -5,7 +5,7 @@
 * **Kevin Wang**
 * **Malcolm Neill**
 * **Nicolette Miller**
-* **Yuval Gilad**
+* **Edmund Yu**
 
 ## Splatter Scheduler
 
