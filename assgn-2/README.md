@@ -44,4 +44,4 @@ Shutdown the system and reboot into the new kernel.
 * **Kevin Wang**
 * **Malcolm Neill**
 * **Nicolette Miller**
-* **Yuval Gilad**
+* **Edmund Yu**
