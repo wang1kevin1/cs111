@@ -269,6 +269,7 @@ struct cpu_group *cpu_top;		/* CPU topology */
 /*
  * Run-time tunables.
  */
+static int schedcase = 0;						/* Scheduling case # */
 static int rebalance = 1;
 static int balance_interval = 128;	/* Default set in sched_initticks(). */
 static int affinity;
@@ -459,7 +460,7 @@ sched_shouldpreempt(int pri, int cpri, int remote)
 static __inline void
 tdq_runq_add(struct tdq *tdq, struct thread *td, int flags)
 {
-	printf("Case: %d", schedcase)
+	printf("Case: %d", schedcase);
 	
 	struct td_sched *ts;
 	u_char pri;
@@ -3076,6 +3077,5 @@ static int ccpu = 0;
 SYSCTL_INT(_kern, OID_AUTO, ccpu, CTLFLAG_RD, &ccpu, 0, "");
 
 /* Scheduling Cases */
-static int schedcase = 0;
 SYSCTL_INT(_kern_sched, OID_AUTO, schedcase, CTLFLAG_RW, &schedcase, 0,
     "Case # for the kernel to use on user processes");
