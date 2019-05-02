@@ -3,17 +3,20 @@ install:
 	#yes | cp -rf kern_switch.c /usr/src/sys/kern/kern_switch.c
 	#yes | cp -rf runq.h /usr/src/sys/sys/runq.h
 
-case0:
-	sysctl -w sched_ule.schedcase 0
+check_case:
+	sysctl -n kern.sched.schedcase
 
-case_1:
-	sysctl -w sched_ule.schedcase 1
-
+case1:
+	sysctl -w kern.sched.schedcase=1
+	
 case2:
-	sysctl -w sched_ule.schedcase 2
-
+	sysctl -w kern.sched.schedcase=2
+	
 case3:
-	sysctl -w sched_ule.schedcase 3
+	sysctl -w kern.sched.schedcase=3
+	
+case4:
+	sysctl -w kern.sched.schedcase=4
 	
 benchmark:
 	cc -c benchmark.c

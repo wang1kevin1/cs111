@@ -20,13 +20,15 @@ Next, download the files into your workspace on your FreeBSD machine.
 In the directory containing the new files, run the makefile command:
 ```
 cd path/to/directory
-make install
+sudo make install
 ```
 
 Change directories and compile the new kernel:
 ```
 cd /usr/src
-make buildkernel KERNCONF=MYKERNEL
+sudo make buildkernel KERNCONF=MYKERNEL                 // initial compile
+
+sudo make buildkernel -j4 KERNCONF=MYKERNEL -DKERNFAST  // fast compile
 ```
 
 Install the compiled kernel:
