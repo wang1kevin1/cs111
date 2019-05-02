@@ -459,6 +459,8 @@ sched_shouldpreempt(int pri, int cpri, int remote)
 static __inline void
 tdq_runq_add(struct tdq *tdq, struct thread *td, int flags)
 {
+	printf("Case: %d", schedcase)
+	
 	struct td_sched *ts;
 	u_char pri;
 
