@@ -1,4 +1,4 @@
-git/*-
+/*-
  * SPDX-License-Identifier: BSD-2-Clause-FreeBSD
  *
  * Copyright (c) 2001 Jake Burkholder <jake@FreeBSD.org>
@@ -390,24 +390,22 @@ runq_priority_queue(struct rqhead *rqh, struct thread *td, int flags)
 	struct rqhead *rqh;
 	struct thread *temp_td;   
 
-	if(TAILQ_FIRST(rqh) == NULL) {
-		TAILQ_INSERT_HEAD(rqh, td, td_runq);
+	if(TAILQ_FIRST(rqh) == NULL) {    // returns first item in queue or NULL if queue is empty 
+		TAILQ_INSERT_HEAD(rqh, td, td_runq);    // if NULL, insert at head of tail queue 
 		break; 
-	} else {
-		TAILQ_FOREACH(td, rqh, td_runq) {
-			if(temp_td->td_priority <= td->td_priority) {
-				break;
-			} else {
-				// if temp_td == NULL, insert tail (idk how to do this)
-				TAILQ_INSERT_BEFORE(temp_td, td, td_runq);
-				return; 
+	} else {    // if first item in queue was returned 
+		TAILQ_FOREACH(td, rqh, td_runq) {    // run through tail queue, starting from head & moving forward 
+			if(temp_td->td_priority >= td->td_priority) {    // if temp thread priority is higher than queue priority 
+				if(TAILQ_NEXT(rqh) == NULL){    // returns next item in tail queue, or NULL if item was last item 
+					TAILQ_INSERT_AFTER(temp_td, td, td_runq);    // if NULL, insert after last item in queue 
+				} else {
+					continue;    // if next item in tail queue, continue to iterate through 
+				}
+			} else {    // if temp thread priority is less than queue priority 
+				TAILQ_INSERT_BEFORE(temp_td, td, td_runq);    // insert before item in run queue 
+				return;   
 			}
 		}
-	}
-	if (flags & SRQ_PREEMPTED) {
-		TAILQ_INSERT_HEAD(rqh, td, td_runq);
-	} else {
-		TAILQ_INSERT_TAIL(rqh, td, td_runq);
 	}
 }
 
