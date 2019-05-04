@@ -3072,7 +3072,3 @@ SYSCTL_PROC(_kern_sched, OID_AUTO, topology_spec, CTLTYPE_STRING |
 /* ps compat.  All cpu percentages from ULE are weighted. */
 static int ccpu = 0;
 SYSCTL_INT(_kern, OID_AUTO, ccpu, CTLFLAG_RD, &ccpu, 0, "");
-
-/* Scheduling Cases */
-SYSCTL_INT(_kern_sched, OID_AUTO, schedcase, CTLFLAG_RW, &schedcase, 0,
-    "Case # for the kernel to use on user processes");
