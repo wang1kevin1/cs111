@@ -1,14 +1,14 @@
 install:
 	yes | cp -rf kern_switch.c /usr/src/sys/kern/kern_switch.c
-	cc -c benchmark.c
-	cc -Wall -Werror -Wextra -Wshadow -O3 -pedantic -o benchmark benchmark.o
+	c++ -c benchmark.cc
+	c++ -Wall -Werror -Wextra -Wshadow -O3 -pedantic -o benchmark benchmark.o -lpthread
 
 uninstall:
 	yes | cp -rf /unedited/kern/kern_switch.c /usr/src/sys/kern/kern_switch.c
 	rm -f benchmark benchmark.o benchmark_results
 
 benchmark:
-	./benchmark > benchmark_log
+	time ./benchmark > benchmark_log
 
 check_case:
 	sysctl -n kern.sched.schedcase
