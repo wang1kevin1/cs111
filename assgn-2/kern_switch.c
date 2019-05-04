@@ -48,6 +48,8 @@ __FBSDID("$FreeBSD: releng/12.0/sys/kern/kern_switch.c 335879 2018-07-03 01:55:0
 
 #include <machine/cpu.h>
 
+static int schedcase = 1;						/* Scheduling case # */
+
 /* Uncomment this to enable logging of critical_enter/exit. */
 #if 0
 #define	KTR_CRITICAL	KTR_SCHED
@@ -259,6 +261,11 @@ critical_exit_KBI(void)
 /************************************************************************
  * SYSTEM RUN QUEUE manipulations and tests				*
  ************************************************************************/
+
+ /* Scheduling Cases */
+SYSCTL_INT(_kern_sched, OID_AUTO, schedcase, CTLFLAG_RW, &schedcase, 0,
+    "Case # for the kernel to use on user processes");
+	
 /*
  * Initialize a run structure.
  */

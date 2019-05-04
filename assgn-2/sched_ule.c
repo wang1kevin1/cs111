@@ -269,7 +269,6 @@ struct cpu_group *cpu_top;		/* CPU topology */
 /*
  * Run-time tunables.
  */
-static int schedcase = 1;						/* Scheduling case # */
 static int rebalance = 1;
 static int balance_interval = 128;	/* Default set in sched_initticks(). */
 static int affinity;
