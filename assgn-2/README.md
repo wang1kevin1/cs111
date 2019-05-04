@@ -38,6 +38,15 @@ make installkernel KERNCONF=MYKERNEL
 
 Shutdown the system and reboot into the new kernel.
 
+### Uninstalling
+
+Forgot to make a snapshot? To restore the original FreeBSD kernel file(s) and remove created benchmark items:
+```
+make uninstall
+
+// recompile kernel, install, and reboot
+```
+
 ## Switching Scheduling Cases
 
 To switch between scheduling cases:
@@ -54,6 +63,13 @@ make check_case
 ```
 
 ## Running the Benchmark
+
+To run the benchmark tool and check time and stats:
+```
+time make benchmark
+```
+
+The runtime logs can be viewed in the file ```benchmark_log```.
 
 ## Authors
 

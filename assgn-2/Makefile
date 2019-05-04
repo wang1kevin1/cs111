@@ -1,17 +1,14 @@
 install:
-	yes | cp -rf sched_ule.c /usr/src/sys/kern/sched_ule.c
 	yes | cp -rf kern_switch.c /usr/src/sys/kern/kern_switch.c
-	#yes | cp -rf runq.h /usr/src/sys/sys/runq.h
-
-benchmark:	
 	cc -c benchmark.c
 	cc -Wall -Werror -Wextra -Wshadow -O3 -pedantic -o benchmark benchmark.o
 
-test:
-	./benchmark > benchmark_report
+uninstall:
+	yes | cp -rf /unedited/kern/kern_switch.c /usr/src/sys/kern/kern_switch.c
+	rm -f benchmark benchmark.o benchmark_results
 
-clean:
-	rm -f benchmark.o benchmark_results
+benchmark:
+	./benchmark > benchmark_log
 
 check_case:
 	sysctl -n kern.sched.schedcase

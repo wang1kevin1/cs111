@@ -35,15 +35,6 @@ User process threads are assigned a random priority value and added to a priorit
 ### Switching Cases
 In order to be able to easily implement all four cases, we will add a global value ```sched_case``` to sched_ule.c. This static int value can be updated using the FreeBSD sysctl(9). To allow easy switching, we can specify which scheduling case we want while the kernel is loaded.
 
-
-
-
-
-
-
-
-
-
 ## Kernel Modifications
 
 ### Data 
