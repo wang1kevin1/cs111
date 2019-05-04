@@ -10,7 +10,7 @@ These files modify the FreeBSD 12.0 scheduler and implements a new random schedu
 
 ### Installing The Kernel
 
-To install the new kernel first (as a root user), create a new kernel configuration
+To install the new kernel first (as a root user), create a new kernel configuration:
 ```
 cd /usr/src/sys/amd64/conf
 cp GENERIC MYKERNEL
@@ -20,15 +20,15 @@ Next, download the files into your workspace on your FreeBSD machine.
 In the directory containing the new files, run the makefile command:
 ```
 cd path/to/directory
-sudo make install
+make install
 ```
 
 Change directories and compile the new kernel:
 ```
 cd /usr/src
-sudo make buildkernel KERNCONF=MYKERNEL                 // initial compile
+make buildkernel KERNCONF=MYKERNEL                 // initial compile
 
-sudo make buildkernel -j4 KERNCONF=MYKERNEL -DKERNFAST  // fast compile
+make buildkernel -j4 KERNCONF=MYKERNEL -DKERNFAST  // fast compile
 ```
 
 Install the compiled kernel:
@@ -38,8 +38,22 @@ make installkernel KERNCONF=MYKERNEL
 
 Shutdown the system and reboot into the new kernel.
 
-## Running the Benchmark
+## Switching Scheduling Cases
 
+To switch between scheduling cases:
+```
+make case_1  // use ULE scheduling (FreeBSD)
+make case_2  // use ULE scheduling with priority queues
+make case_3  // use splatter scheduler
+make case_4  // use splatter scheduling with priority queues
+```
+
+To check which scheduling case is being used:
+```
+make check_case
+```
+
+## Running the Benchmark
 
 ## Authors
 
