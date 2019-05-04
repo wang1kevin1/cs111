@@ -1,4 +1,4 @@
-/*-
+git/*-
  * SPDX-License-Identifier: BSD-2-Clause-FreeBSD
  *
  * Copyright (c) 2001 Jake Burkholder <jake@FreeBSD.org>
@@ -380,6 +380,37 @@ getRandUserQueue(void)
     return r;
 }
 
+// Priority queue 
+// Add thread to the queue specified by its priority. 
+
+void runq_priority_queue(struct rqhead *rqh, struct thread *td, int flags);
+void
+runq_priority_queue(struct rqhead *rqh, struct thread *td, int flags)
+{
+	struct rqhead *rqh;
+	struct thread *temp_td;   
+
+	if(TAILQ_FIRST(rqh) == NULL) {
+		TAILQ_INSERT_HEAD(rqh, td, td_runq);
+		break; 
+	} else {
+		TAILQ_FOREACH(td, rqh, td_runq) {
+			if(temp_td->td_priority <= td->td_priority) {
+				break;
+			} else {
+				// if temp_td == NULL, insert tail (idk how to do this)
+				TAILQ_INSERT_BEFORE(temp_td, td, td_runq);
+				return; 
+			}
+		}
+	}
+	if (flags & SRQ_PREEMPTED) {
+		TAILQ_INSERT_HEAD(rqh, td, td_runq);
+	} else {
+		TAILQ_INSERT_TAIL(rqh, td, td_runq);
+	}
+}
+
 /*
  * Add the thread to the queue specified by its priority, and set the
  * corresponding status bit.
@@ -411,8 +442,7 @@ runq_add(struct runq *rq, struct thread *td, int flags)
 		TAILQ_INSERT_HEAD(rqh, td, td_runq);
 	} else {
 		TAILQ_INSERT_TAIL(rqh, td, td_runq);
-	}
-	
+	}	
 }
 
 void
