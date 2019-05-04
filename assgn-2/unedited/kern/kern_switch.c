@@ -44,11 +44,8 @@ __FBSDID("$FreeBSD: releng/12.0/sys/kern/kern_switch.c 335879 2018-07-03 01:55:0
 #include <sys/sched.h>
 #include <sys/smp.h>
 #include <sys/sysctl.h>
-#include <sys/random.h>
 
 #include <machine/cpu.h>
-
-static int schedcase = 1;						/* Scheduling case # */
 
 /* Uncomment this to enable logging of critical_enter/exit. */
 #if 0
@@ -261,11 +258,6 @@ critical_exit_KBI(void)
 /************************************************************************
  * SYSTEM RUN QUEUE manipulations and tests				*
  ************************************************************************/
-
- /* Scheduling Cases */
-SYSCTL_INT(_kern_sched, OID_AUTO, schedcase, CTLFLAG_RW, &schedcase, 0,
-    "Case # for the kernel to use on user processes");
-	
 /*
  * Initialize a run structure.
  */
@@ -368,17 +360,6 @@ runq_setbit(struct runq *rq, int pri)
 	rqb->rqb_bits[RQB_WORD(pri)] |= RQB_BIT(pri);
 }
 
-int getRandUserQueue(void);
-int
-getRandUserQueue(void)
-{
-    int r = random() % 168;
-    if (r < 48) r += 48;
-    if (r >= 80 && r < 120) r += 40;
-
-    return r;
-}
-
 /*
  * Add the thread to the queue specified by its priority, and set the
  * corresponding status bit.
@@ -387,31 +368,19 @@ void
 runq_add(struct runq *rq, struct thread *td, int flags)
 {
 	struct rqhead *rqh;
-
-	int realPri = td->td_priority;
-    int isKernThread = realPri < 48 || (realPri < 120 && realPri > 79);
-
 	int pri;
 
-	if(!isKernThread) {
-		pri = getRandUserQueue();
-	} else {
-		pri = realPri;
-	}
-	
 	pri = td->td_priority / RQ_PPQ;
 	td->td_rqindex = pri;
 	runq_setbit(rq, pri);
 	rqh = &rq->rq_queues[pri];
 	CTR4(KTR_RUNQ, "runq_add: td=%p pri=%d %d rqh=%p",
 	    td, td->td_priority, pri, rqh);
-
 	if (flags & SRQ_PREEMPTED) {
 		TAILQ_INSERT_HEAD(rqh, td, td_runq);
 	} else {
 		TAILQ_INSERT_TAIL(rqh, td, td_runq);
 	}
-	
 }
 
 void
@@ -419,27 +388,18 @@ runq_add_pri(struct runq *rq, struct thread *td, u_char pri, int flags)
 {
 	struct rqhead *rqh;
 
-	int realPri = td->td_priority;
-    int isKernThread = realPri < 48 || (realPri < 120 && realPri > 79);
-
-	if (!isKernThread) {
-        pri = getRandUserQueue() / RQ_PPQ;
-
-		KASSERT(pri < RQ_NQS, ("runq_add_pri: %d out of range", pri));
-		td->td_rqindex = pri;
-		runq_setbit(rq, pri);
-		rqh = &rq->rq_queues[pri];
-		CTR4(KTR_RUNQ, "runq_add_pri: td=%p pri=%d idx=%d rqh=%p",
-	    	td, td->td_priority, pri, rqh);
-	}
-
+	KASSERT(pri < RQ_NQS, ("runq_add_pri: %d out of range", pri));
+	td->td_rqindex = pri;
+	runq_setbit(rq, pri);
+	rqh = &rq->rq_queues[pri];
+	CTR4(KTR_RUNQ, "runq_add_pri: td=%p pri=%d idx=%d rqh=%p",
+	    td, td->td_priority, pri, rqh);
 	if (flags & SRQ_PREEMPTED) {
 		TAILQ_INSERT_HEAD(rqh, td, td_runq);
 	} else {
 		TAILQ_INSERT_TAIL(rqh, td, td_runq);
 	}
 }
-
 /*
  * Return true if there are runnable processes of any priority on the run
  * queue, false otherwise.  Has no side effects, does not modify the run

@@ -75,6 +75,7 @@ static int kern_sched_preemption = 1;
 #else
 static int kern_sched_preemption = 0;
 #endif
+
 SYSCTL_INT(_kern_sched, OID_AUTO, preemption, CTLFLAG_RD,
     &kern_sched_preemption, 0, "Kernel preemption enabled");
 
