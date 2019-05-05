@@ -388,7 +388,6 @@ void runq_priority_queue(struct rqhead *rqh, struct thread *td, int flags);
 void
 runq_priority_queue(struct rqhead *rqh, struct thread *td, int flags)
 {
-	struct rqhead *rqh;
 	struct thread *temp_td;   
 
 	if(TAILQ_FIRST(rqh) == NULL) {    // returns first item in queue or NULL if queue is empty 
@@ -397,8 +396,8 @@ runq_priority_queue(struct rqhead *rqh, struct thread *td, int flags)
 	} else {    // if first item in queue was returned 
 		TAILQ_FOREACH(td, rqh, td_runq) {    // run through tail queue, starting from head & moving forward 
 			if(temp_td->td_priority >= td->td_priority) {    // if temp thread priority is higher than queue priority 
-				if(TAILQ_NEXT(rqh) == NULL){    // returns next item in tail queue, or NULL if item was last item 
-					TAILQ_INSERT_AFTER(temp_td, td, td_runq);    // if NULL, insert after last item in queue 
+				if(TAILQ_NEXT(temp_td, td_runq) == NULL){    // returns next item in tail queue, or NULL if item was last item 
+					TAILQ_INSERT_AFTER(rqh, temp_td, td, td_runq);    // if NULL, insert after last item in queue 
 					return;
 				} else {
 					continue;    // if next item in tail queue, continue to iterate through 
@@ -425,7 +424,7 @@ runq_add(struct runq *rq, struct thread *td, int flags)
     int isKernel = (priority <= 47) || (priority >= 80 && priority <= 119);
 
 	// if splatter case (and not a kernel td)
-	if(!isKernThread && (schedcase == 3 || schedcase == 4)) { 
+	if((!isKernel) && (schedcase == 3 || schedcase == 4)) { 
 		pri = getRandUserQueue(); // get random priority
 	} else { // kernel threads, case 1, or case 2 (non Splatter)
 		pri = td->td_priority; // get actual priority
@@ -441,7 +440,7 @@ runq_add(struct runq *rq, struct thread *td, int flags)
 	    td, td->td_priority, pri, rqh);
 
 	// if using priority queues (and not a kernel td)
-	if(!isKernel && (schedcase == 2 || schedcase == 4)) { 
+	if((!isKernel) && (schedcase == 2 || schedcase == 4)) { 
 		runq_priority_queue(rqh, td, flags);
 	} else { // kernel, case 1, or case 3 (non pqueue)
 		if (flags & SRQ_PREEMPTED) {
@@ -461,7 +460,7 @@ runq_add_pri(struct runq *rq, struct thread *td, u_char pri, int flags)
     int isKernel = (priority <= 47) || (priority >= 80 && priority <= 119);
 
 	// if splatter case (and not a kernel td)
-	if (!isKernel && (schedcase == 3 || schedcase == 4)) {
+	if ((!isKernel) && (schedcase == 3 || schedcase == 4)) {
         pri = getRandUserQueue() / RQ_PPQ;	// random priority
 	} // otherwise use provided arg 'u_char pri'
 
@@ -475,7 +474,7 @@ runq_add_pri(struct runq *rq, struct thread *td, u_char pri, int flags)
 	}
 
 	// if using priority queues (and not a kernel td)
-	if(!isKernel && (schedcase == 2 || schedcase == 4)) { 
+	if((!isKernel) && (schedcase == 2 || schedcase == 4)) { 
 		runq_priority_queue(rqh, td, flags);
 	} else { // kernel, case 1, or case 3 (non pqueue)
 		if (flags & SRQ_PREEMPTED) {
