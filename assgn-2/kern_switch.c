@@ -370,14 +370,13 @@ runq_setbit(struct runq *rq, int pri)
 }
 
 int getRandUserQueue(void);
-int
-getRandUserQueue(void)
+int getRandUserQueue(void)
 {
-    int r = random() % 168;
-    if (r < 48) r += 48;
-    if (r >= 80 && r < 120) r += 40;
+    int splatterNum = srandom(time(0)) % 168;
+    if (splatterNum < 48) splatterNum += 48;
+    if (splatterNum >= 80 && splatterNum < 120) splatterNum += 40;
 
-    return r;
+    return splatterNum;
 }
 
 // Priority queue 
