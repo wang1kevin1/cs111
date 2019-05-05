@@ -34,17 +34,20 @@ User process threads will be assigned to a random FIFO run queue.
 User process threads will be assigned to a random run queue.
 The threads will be inserted into the FIFO queues by priority (simulating a priority queue).
 
-```schedcase``` = 3
+```schedcase``` = 4
 
 ## Design
 
 **Switching Cases**
+
 In order to be able to easily implement all four cases, we will use a global value ```schedcase```. This static int value can be updated using the FreeBSD sysctl(9). This will allow us to switch between scheduling cases during runtime while the kernel is loaded.
 
 **Ignore Kernel Threads**
+
 Note that a kernel thread has priority value ```td->td_priority``` of 0 to 47 and 80 to 119 -- inclusive. 
 
 **Random Number Generator**
+
 In order to create a random number generator, we
 
 **Assigning a Random Run Queue**
