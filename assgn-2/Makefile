@@ -5,10 +5,13 @@ install:
 
 uninstall:
 	yes | cp -rf /unedited/kern/kern_switch.c /usr/src/sys/kern/kern_switch.c
-	rm -f benchmark benchmark.o benchmark_results
+	rm -f benchmark benchmark.o benchmark_log
 
 benchmark:
-	time ./benchmark > benchmark_log
+	./benchmark > benchmark_log
+
+stats:
+	time ./benchmark
 
 check_case:
 	sysctl -n kern.sched.schedcase
