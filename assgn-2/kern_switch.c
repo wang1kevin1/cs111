@@ -379,8 +379,8 @@ getRandom(void)
 	// https://www.programmingsimplified.com/c-program-generate-random-numbers
 	// https://wiki.freebsd.org/AndriyGapon/AvgThreadPriorityRanges
 	// https://www.lemoda.net/c/random-number/
-	
-	srandom(time(0)); // seeds rng with current time in seconds
+
+	srandom(time_second); // seeds rng with current time in seconds
 
     int r = random() % 255 + 1;	// get random value in range 0 to 255
 
