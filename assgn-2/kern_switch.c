@@ -369,15 +369,16 @@ runq_setbit(struct runq *rq, int pri)
 	rqb->rqb_bits[RQB_WORD(pri)] |= RQB_BIT(pri);
 }
 
-int getRandUserQueue(void);
-int
-getRandUserQueue(void)
-{
-    int r = random() % 168;
-    if (r < 48) r += 48;
-    if (r >= 80 && r < 120) r += 40;
+int getRandom(void);
 
-    return r;
+int
+getRandom(void)
+{
+    int splatterNum = srandom(time(0)) % 168;
+    if (splatterNum < 48) splatterNum += 48;
+    if (splatterNum >= 80 && splatterNum < 120) splatterNum += 40;
+
+    return splatterNum;
 }
 
 // Priority queue 
@@ -395,7 +396,7 @@ runq_priority_queue(struct rqhead *rqh, struct thread *td, int flags)
 		return;
 	} else {    // if first item in queue was returned 
 		TAILQ_FOREACH(temp_td, rqh, td_runq) {    // run through tail queue, starting from head & moving forward 
-			if(temp_td->td_priority >= td->td_priority) {    // if temp thread priority is higher than queue priority 
+			if(temp_td->td_priority <= td->td_priority) {    // if temp thread priority is higher than queue priority 
 				if(TAILQ_NEXT(temp_td, td_runq) == NULL) {    // returns next item in tail queue, or NULL if item was last item 
 					TAILQ_INSERT_AFTER(rqh, temp_td, td, td_runq);    // if NULL, insert after last item in queue 
 					return;
@@ -425,7 +426,7 @@ runq_add(struct runq *rq, struct thread *td, int flags)
 
 	// if splatter case (and not a kernel td)
 	if (!isKernel && (schedcase == 3 || schedcase == 4)) { 
-		pri = getRandUserQueue(); // get random priority
+		pri = getRandom(); // get random priority
 	} else { // kernel threads, case 1, or case 2 (non Splatter)
 		pri = td->td_priority; // get actual priority
 	}
@@ -461,7 +462,7 @@ runq_add_pri(struct runq *rq, struct thread *td, u_char pri, int flags)
 
 	// if splatter case (and not a kernel td)
 	if (!isKernel && (schedcase == 3 || schedcase == 4)) {
-        pri = getRandUserQueue() / RQ_PPQ;	// random priority
+        pri = getRandom() / RQ_PPQ;	// random priority
 	} // otherwise use provided arg 'u_char pri'
 
 	// set the rq for all cases

@@ -40,7 +40,9 @@ The threads will be inserted into the FIFO queues by priority (simulating a prio
 
 **Switching Cases**
 
-In order to be able to easily implement all four cases, we will use a global value ```schedcase```. This static int value can be updated using the FreeBSD sysctl(9). This will allow us to switch between scheduling cases during runtime while the kernel is loaded.
+In order to be able to easily implement all four cases, we will use a global value ```schedcase```. 
+This static int value can be updated using the FreeBSD sysctl(9). 
+This will allow us to switch between scheduling cases during runtime while the kernel is loaded.
 
 **Ignore Kernel Threads**
 
@@ -99,18 +101,75 @@ static int schedcase	// used to determine which kernel case is being used
 ```
 
 ```
-runq_add
+void
+runq_add(struct runq *rq, struct thread *td, int flags) {
+  check if a kernel thread, set isKernel
+
+  if (!isKernel and schedcase == 3 or 4)
+    set pri to random priority
+  else if (isKernel or schedcase == 1 or 2)
+    set pri to actual thread priority
+
+  use pri value to set run queue for all cases
+
+  if (!isKernel and schedcase == 2 or 4)
+    send to priority queue insertion procedure
+  else if (isKernel or schedcase == 1 or 3)
+    inserts into queue normally
+}
 ```
 
 ```
-runq_add_pri
+void
+runq_add_pri(struct runq *rq, struct thread *td, u_char pri, int flags) {
+  check if a kernel thread, set isKernel
+
+  if (!isKernel and schedcase == 3 or 4)
+    set pri to random priority
+  // actual thread priority is already set in arg[2]
+
+  use pri value to set run queue for all cases
+
+  if (!isKernel and schedcase == 2 or 4)
+    send to priority queue insertion procedure
+  else if (isKernel or schedcase == 1 or 3)
+    inserts into queue normally
+}
 ```
 
 ```
-// nikki's insert by priority function
+void runq_priority_queue(struct rqhead *rqh, struct thread *td, int flags);
+
+void
+runq_priority_queue(struct rqhead *rqh, struct thread *td, int flags)
+{
+	if (run queue is empty) {
+    insert thread at head
+  } else {
+    for each temp thread in runqueue {
+      if (temp thread priority <= td priority) {
+        if (temp thread is last thread in queue)
+          insert td after  temp thread
+        else
+          continue through queue
+      }
+      else 
+        insert the thread before temp thread
+  }
+}      
 ```
 
 ## Benchmark Analysis
+
+
+
+
+
+
+
+
+
+
 
 
 
