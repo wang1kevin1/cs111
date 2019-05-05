@@ -64,14 +64,9 @@ make check_case
 
 ## Running the Benchmark
 
-To run the benchmark tool:
+To run the benchmark tool and get runtime stats:
 ```
 make benchmark
-```
-
-To check runtime stats:
-```
-make stats
 ```
 
 The runtime logs can be viewed in the file ```benchmark_log```.
