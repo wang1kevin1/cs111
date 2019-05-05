@@ -384,30 +384,29 @@ getRandUserQueue(void)
 // Add thread to the queue specified by its priority. 
 
 void runq_priority_queue(struct rqhead *rqh, struct thread *td, int flags);
+
 void
 runq_priority_queue(struct rqhead *rqh, struct thread *td, int flags)
 {
 	struct rqhead *rqh;
 	struct thread *temp_td;   
 
-	if(TAILQ_FIRST(rqh) == NULL) {
-		TAILQ_INSERT_HEAD(rqh, td, td_runq);
+	if(TAILQ_FIRST(rqh) == NULL) {    // returns first item in queue or NULL if queue is empty 
+		TAILQ_INSERT_HEAD(rqh, td, td_runq);    // if NULL, insert at head of tail queue 
 		break; 
-	} else {
-		TAILQ_FOREACH(td, rqh, td_runq) {
-			if(temp_td->td_priority <= td->td_priority) {
-				break;
-			} else {
-				// if temp_td == NULL, insert tail (idk how to do this)
-				TAILQ_INSERT_BEFORE(temp_td, td, td_runq);
-				return; 
+	} else {    // if first item in queue was returned 
+		TAILQ_FOREACH(td, rqh, td_runq) {    // run through tail queue, starting from head & moving forward 
+			if(temp_td->td_priority >= td->td_priority) {    // if temp thread priority is higher than queue priority 
+				if(TAILQ_NEXT(rqh) == NULL){    // returns next item in tail queue, or NULL if item was last item 
+					TAILQ_INSERT_AFTER(temp_td, td, td_runq);    // if NULL, insert after last item in queue 
+				} else {
+					continue;    // if next item in tail queue, continue to iterate through 
+				}
+			} else {    // if temp thread priority is less than queue priority 
+				TAILQ_INSERT_BEFORE(temp_td, td, td_runq);    // insert before item in run queue 
+				return;   
 			}
 		}
-	}
-	if (flags & SRQ_PREEMPTED) {
-		TAILQ_INSERT_HEAD(rqh, td, td_runq);
-	} else {
-		TAILQ_INSERT_TAIL(rqh, td, td_runq);
 	}
 }
 
@@ -419,30 +418,37 @@ void
 runq_add(struct runq *rq, struct thread *td, int flags)
 {
 	struct rqhead *rqh;
-
-	int realPri = td->td_priority;
-    int isKernThread = realPri < 48 || (realPri < 120 && realPri > 79);
-
 	int pri;
 
-	if(!isKernThread) {
-		pri = getRandUserQueue();
-	} else {
-		pri = realPri;
+	int priority = td->td_priority;
+    int isKernel = (priority <= 47) || (priority >= 80 && priority <= 119);
+
+	// if splatter case (and not a kernel td)
+	if(!isKernThread && (schedcase == 3 || schedcase == 4)) { 
+		pri = getRandUserQueue(); // get random priority
+	} else { // kernel threads, case 1, or case 2 (non Splatter)
+		pri = priority; // get actual priority
 	}
 	
-	pri = td->td_priority / RQ_PPQ;
+	pri = pri / RQ_PPQ;	// use buffer 'pri' to get actual or random
+
+	// set rq for all cases
 	td->td_rqindex = pri;
 	runq_setbit(rq, pri);
 	rqh = &rq->rq_queues[pri];
 	CTR4(KTR_RUNQ, "runq_add: td=%p pri=%d %d rqh=%p",
 	    td, td->td_priority, pri, rqh);
 
-	if (flags & SRQ_PREEMPTED) {
-		TAILQ_INSERT_HEAD(rqh, td, td_runq);
-	} else {
-		TAILQ_INSERT_TAIL(rqh, td, td_runq);
-	}	
+	// if using priority queues (and not a kernel td)
+	if(!isKernel && (schedcase == 2 || schedcase == 4)) { 
+		runq_priority_queue(rqh, td, flags);
+	} else { // kernel, case 1, or case 3 (non pqueue)
+		if (flags & SRQ_PREEMPTED) {
+			TAILQ_INSERT_HEAD(rqh, td, td_runq);
+		} else {
+			TAILQ_INSERT_TAIL(rqh, td, td_runq);
+		}
+	}
 }
 
 void
@@ -450,24 +456,32 @@ runq_add_pri(struct runq *rq, struct thread *td, u_char pri, int flags)
 {
 	struct rqhead *rqh;
 
-	int realPri = td->td_priority;
-    int isKernThread = realPri < 48 || (realPri < 120 && realPri > 79);
+	int priority = td->td_priority;
+    int isKernel = (priority <= 47) || (priority >= 80 && priority <= 119);
 
-	if (!isKernThread) {
-        pri = getRandUserQueue() / RQ_PPQ;
+	// if splatter case (and not a kernel td)
+	if (!isKernel && (schedcase == 3 || schedcase == 4)) {
+        pri = getRandUserQueue() / RQ_PPQ;	// random priority
+	} // otherwise use provided arg 'u_char pri'
 
-		KASSERT(pri < RQ_NQS, ("runq_add_pri: %d out of range", pri));
-		td->td_rqindex = pri;
-		runq_setbit(rq, pri);
-		rqh = &rq->rq_queues[pri];
-		CTR4(KTR_RUNQ, "runq_add_pri: td=%p pri=%d idx=%d rqh=%p",
-	    	td, td->td_priority, pri, rqh);
+	// set the rq for all cases
+	KASSERT(pri < RQ_NQS, ("runq_add_pri: %d out of range", pri));
+	td->td_rqindex = pri;
+	runq_setbit(rq, pri);
+	rqh = &rq->rq_queues[pri];
+	CTR4(KTR_RUNQ, "runq_add_pri: td=%p pri=%d idx=%d rqh=%p",
+	    td, td->td_priority, pri, rqh);
 	}
 
-	if (flags & SRQ_PREEMPTED) {
-		TAILQ_INSERT_HEAD(rqh, td, td_runq);
-	} else {
-		TAILQ_INSERT_TAIL(rqh, td, td_runq);
+	// if using priority queues (and not a kernel td)
+	if(!isKernel && (schedcase == 2 || schedcase == 4)) { 
+		runq_priority_queue(rqh, td, flags);
+	} else { // kernel, case 1, or case 3 (non pqueue)
+		if (flags & SRQ_PREEMPTED) {
+			TAILQ_INSERT_HEAD(rqh, td, td_runq);
+		} else {
+			TAILQ_INSERT_TAIL(rqh, td, td_runq);
+		}
 	}
 }
 
