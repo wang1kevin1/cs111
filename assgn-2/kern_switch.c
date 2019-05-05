@@ -471,7 +471,6 @@ runq_add_pri(struct runq *rq, struct thread *td, u_char pri, int flags)
 	rqh = &rq->rq_queues[pri];
 	CTR4(KTR_RUNQ, "runq_add_pri: td=%p pri=%d idx=%d rqh=%p",
 	    td, td->td_priority, pri, rqh);
-	}
 
 	// if using priority queues (and not a kernel td)
 	if (!isKernel && (schedcase == 2 || schedcase == 4)) {
