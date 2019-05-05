@@ -44,6 +44,7 @@ __FBSDID("$FreeBSD: releng/12.0/sys/kern/kern_switch.c 335879 2018-07-03 01:55:0
 #include <sys/sched.h>
 #include <sys/smp.h>
 #include <sys/sysctl.h>
+#include <stdlib.h>
 
 #include <machine/cpu.h>
 
