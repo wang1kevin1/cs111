@@ -474,9 +474,9 @@ runq_add_pri(struct runq *rq, struct thread *td, u_char pri, int flags)
 	}
 
 	// if using priority queues (and not a kernel td)
-	if (!isKernel && (schedcase == 2 || schedcase == 4)) { 
+	if (!isKernel && (schedcase == 2 || schedcase == 4)) {
 		runq_priority_queue(rqh, td, flags);
-	} else { // kernel, case 1, or case 3 (non pqueue)
+	} else { // kernel, case 1, or case 3 - non pqueue
 		if (flags & SRQ_PREEMPTED) {
 			TAILQ_INSERT_HEAD(rqh, td, td_runq);
 		} else {
