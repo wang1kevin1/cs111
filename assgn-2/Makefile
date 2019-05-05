@@ -7,7 +7,7 @@ uninstall:
 	yes | cp -rf unedited/kern/kern_switch.c /usr/src/sys/kern/kern_switch.c
 	rm -f benchmark benchmark.o benchmark_log
 
-benchmark:
+test:
 	time ./benchmark > benchmark_log
 
 check_case:

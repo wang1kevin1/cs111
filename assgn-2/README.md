@@ -66,7 +66,7 @@ make check_case
 
 To run the benchmark tool and get runtime stats:
 ```
-make benchmark
+make test
 ```
 
 The runtime logs can be viewed in the file ```benchmark_log```.
