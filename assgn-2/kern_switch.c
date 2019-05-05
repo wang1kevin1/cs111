@@ -44,7 +44,7 @@ __FBSDID("$FreeBSD: releng/12.0/sys/kern/kern_switch.c 335879 2018-07-03 01:55:0
 #include <sys/sched.h>
 #include <sys/smp.h>
 #include <sys/sysctl.h>
-#include <stdlib.h>
+#include <sys/random.h>
 
 #include <machine/cpu.h>
 
@@ -375,9 +375,10 @@ int
 getRandom(void)
 {
 	// https://www.programmingsimplified.com/c-program-generate-random-numbers
-    int r = rand() % 255 + 1;	// get random value in range 0 to 255
-    if (r < 48) { r += 48; }	// adjust so we don't get interrupt priority values
-    if (r >= 80 && r < 120) {r += 40; } // adjust so we don't get kernel priority values
+    int r = random() % 255 + 1;	// get random value in range 0 to 255
+
+    if (r <= 47) { r += 48; }	// adjust so we don't get interrupt priority values
+    if (r >= 80 && r <= 119) {r += 40; } // adjust so we don't get kernel priority values
 
     return r;
 }
