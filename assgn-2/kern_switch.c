@@ -392,13 +392,14 @@ runq_priority_queue(struct rqhead *rqh, struct thread *td, int flags)
 	struct thread *temp_td;   
 
 	if(TAILQ_FIRST(rqh) == NULL) {    // returns first item in queue or NULL if queue is empty 
-		TAILQ_INSERT_HEAD(rqh, td, td_runq);    // if NULL, insert at head of tail queue 
-		break; 
+		TAILQ_INSERT_HEAD(rqh, td, td_runq);    // if NULL, insert at head of tail queue
+		return;
 	} else {    // if first item in queue was returned 
 		TAILQ_FOREACH(td, rqh, td_runq) {    // run through tail queue, starting from head & moving forward 
 			if(temp_td->td_priority >= td->td_priority) {    // if temp thread priority is higher than queue priority 
 				if(TAILQ_NEXT(rqh) == NULL){    // returns next item in tail queue, or NULL if item was last item 
 					TAILQ_INSERT_AFTER(temp_td, td, td_runq);    // if NULL, insert after last item in queue 
+					return;
 				} else {
 					continue;    // if next item in tail queue, continue to iterate through 
 				}
@@ -427,7 +428,7 @@ runq_add(struct runq *rq, struct thread *td, int flags)
 	if(!isKernThread && (schedcase == 3 || schedcase == 4)) { 
 		pri = getRandUserQueue(); // get random priority
 	} else { // kernel threads, case 1, or case 2 (non Splatter)
-		pri = priority; // get actual priority
+		pri = td->td_priority; // get actual priority
 	}
 	
 	pri = pri / RQ_PPQ;	// use buffer 'pri' to get actual or random

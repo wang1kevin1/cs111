@@ -2,10 +2,10 @@
 
 ## Team: W's Only
 
-* **Kevin Wang** - case switching, splatter scheduling
-* **Malcolm Neill** - splatter scheduling
-* **Nicolette Miller** - priority queue
-* **Edmund Yu** - benchmark
+* **Kevin Wang** - design, case switching, splatter scheduling
+* **Malcolm Neill** - design, rng, splatter scheduling
+* **Nicolette Miller** - design, priority queue
+* **Edmund Yu** - design, benchmark, benchmark analysis
 
 ## Scheduling Cases
 
@@ -45,6 +45,7 @@ In order to be able to easily implement all four cases, we will use a global val
 **Ignore Kernel Threads**
 
 Note that a kernel thread has priority value ```td->td_priority``` of 0 to 47 and 80 to 119 -- inclusive. 
+We will use a boolean value ```isKernel``` which will say if a priority falls within the boundaries.
 
 **Random Number Generator**
 
@@ -52,16 +53,33 @@ In order to create a random number generator, we
 
 **Assigning a Random Run Queue**
 
-If ```schedcase``` is equal to 3 or 4,
+If ```schedcase``` is equal to 3 or 4, we will use a random priority provided by the RNG function.
+When assigning a random run queue, FreeBSD typically uses ```td_priority``` however we can set the buffer value ```pri```
+to a random one.
+
+For kernel threads and other cases, the buffer value ```pri``` will still be equal to ```td->td_priority```.
+
+Assigning of queues will be the same for all cases, with varying results due to ```pri```.
 
 **Priority Queues**
 
-If ```schedcase``` is equal to 2 or 4, 
+If ```schedcase``` is equal to 2 or 4, we will add a thread to its assigned queue, ordered by priority. 
+While the run queue will still use FreeBSD's FIFO, it will simulate a priority queue. 
+Because we will be inserting items throughout the run queue, we will be using linked-lists.
+While we should've used heaps -- O(lg n) -- and implemented an extractMin for choosing a thread to run , 
+linked-lists -- O(n) was easier with the library TAILQ procedures)
+
+If a run queue is empty, we will insert the thread at the head. Otherwise, 
+we will cycle through the run queue and compare our threads actual priority against 
+the temporary selected run queue thread's priority.
+
+When comparing, if our thread has a lower priority (bigger value), we will either continue to the next item
+or -- if at the end of the run queue -- insert it after. If our thread has a higher priority (smaller value), 
+we will insert it before the temporarily selected thread.
 
 **Benchmark**
 
-In order to test thread scheduling, our benchmark will create a large amount of processes using a fork bomb.
-We will also run fibonacci.
+In order to test thread scheduling, our benchmark will run a fork bomb, fibonacci, and test threading.
 
 ## Kernel Modifications
 
