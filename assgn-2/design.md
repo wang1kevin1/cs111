@@ -51,7 +51,8 @@ We will use a boolean value ```isKernel``` which will say if a priority falls wi
 
 **Random Number Generator**
 
-In order to create a random number generator, we
+In order to generate a random priority, we will utilize random(9) to get a number between 0 and 255.
+
 
 **Assigning a Random Run Queue**
 
