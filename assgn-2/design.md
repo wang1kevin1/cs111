@@ -52,7 +52,10 @@ We will use a boolean value ```isKernel``` which will say if a priority falls wi
 **Random Number Generator**
 
 In order to generate a random priority, we will utilize random(9) to get a number between 0 and 255.
+Because we don't want to send non kernel threads to interrupt and kernel run queues, we will adjust them.
 
+The adjustment won't be completely fair and certain priority values will be called more often than others.
+To combat this, we will seed the randomizer with the current system time in order to make it more random.
 
 **Assigning a Random Run Queue**
 
@@ -98,7 +101,12 @@ static int schedcase	// used to determine which kernel case is being used
 **kern_switch.c**
 
 ```
-// rng function
+int
+getRandom(void) {
+  use system time to set generator seed
+  get random value between 0 and 255
+  adjust to avoid kernel and interrupt queues
+}
 ```
 
 ```
@@ -139,8 +147,6 @@ runq_add_pri(struct runq *rq, struct thread *td, u_char pri, int flags) {
 ```
 
 ```
-void runq_priority_queue(struct rqhead *rqh, struct thread *td, int flags);
-
 void
 runq_priority_queue(struct rqhead *rqh, struct thread *td, int flags)
 {
