@@ -378,7 +378,7 @@ getRandom(void)
 {
 	// https://www.programmingsimplified.com/c-program-generate-random-numbers
 	// https://wiki.freebsd.org/AndriyGapon/AvgThreadPriorityRanges
-    int r = srandom(time(0)) % 255 + 1;	// get random value in range 0 to 255
+    int r = srandom((u_long) time_uptime) % 255 + 1;	// get random value in range 0 to 255
 
     if (r <= 47) { r += 48; }	// adjust so we don't get interrupt priority values
     if (r >= 80 && r <= 119) {r += 40; } // adjust so we don't get kernel priority values
