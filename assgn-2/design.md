@@ -85,8 +85,24 @@ we will insert it before the temporarily selected thread.
 
 **Benchmark**
 
-In order to test thread scheduling, our benchmark will run a fork bomb, fibonacci, and test threading.
+The benchmark program used for testing our kernel consists of three parts.
 
+The first is a forkbomb that creates many child processes to consume CPU time. 
+It recursively calls fork() and prints which iteration it is in. 
+Each iteration runs a small calculating function to ensure that the compiler does not optimize it away.
+
+The second function is a stress test that tests how the scheduler assigns a large calculation task. 
+Trying to calculate large Fibonnaci numbers without the use of dynamic programming requires memory management 
+and handling many smaller tasks. 
+
+The final part is a simple multithreading test that iterates though a loop and prints out the current threadID. 
+```<thread>``` is a C++ 11 header file, which required an update on both the program and Makefile. 
+Using threads helps further test the scheduler.
+
+We will also use the FreeBSD time command to capture run time.
+* ```real``` is the total elapsed time.
+* ```user``` is the amount of CPU time spent in user mode.
+* ```sys``` is the amount of CPU time spent in kernel mode.
 ## Kernel Modifications
 
 ### Data 
