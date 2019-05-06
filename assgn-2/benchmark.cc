@@ -34,7 +34,7 @@ void threadID() {
   for (int i =0; i < 10000; i++) {
     counter++;
   }
-  if (counter > 998) {
+  if (counter > 9998) {
   std::cout << "Current thread ID : " << std::this_thread::get_id() << "\n";
   }
 }
