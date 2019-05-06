@@ -2,10 +2,10 @@
 
 ## Team: W's Only
 
-* **Kevin Wang** - design, case switching, splatter scheduling
-* **Malcolm Neill** - design, rng, splatter scheduling
-* **Nicolette Miller** - design, priority queue
-* **Edmund Yu** - design, benchmark, benchmark analysis
+* **Kevin Wang** *(kwang43)* - design, case switching, splatter scheduling
+* **Malcolm Neill** *(mneill)* - design, rng, splatter scheduling
+* **Nicolette Miller** *(nmiller2)* - design, priority queue
+* **Edmund Yu** *(eyu9)* - design, benchmark, benchmark analysis
 
 ## Scheduling Cases
 
@@ -73,7 +73,7 @@ If ```schedcase``` is equal to 2 or 4, we will add a thread to its assigned queu
 While the run queue will still use FreeBSD's FIFO, it will simulate a priority queue. 
 Because we will be inserting items throughout the run queue, we will be using linked-lists.
 While we should've used heaps -- O(lg n) -- and implemented an extractMin for choosing a thread to run , 
-linked-lists -- O(n) was easier with the library TAILQ procedures)
+linked-lists -- O(n) was easier with the library TAILQ procedures.
 
 If a run queue is empty, we will insert the thread at the head. Otherwise, 
 we will cycle through the run queue and compare our threads actual priority against 
@@ -117,6 +117,8 @@ static int schedcase	// used to determine which kernel case is being used
 **kern_switch.c**
 
 ```
+/* This function is used to generate a random priority value */
+
 int
 getRandom(void) {
   use system time to set generator seed
@@ -126,6 +128,8 @@ getRandom(void) {
 ```
 
 ```
+/* This function is used to insert threads into an ordered run queue */
+
 void
 runq_priority_queue(struct rqhead *rqh, struct thread *td, int flags)
 {
@@ -146,6 +150,8 @@ runq_priority_queue(struct rqhead *rqh, struct thread *td, int flags)
 ```
 
 ```
+/* Modified FreeBSD function for assigning threads to a run queue by priority */
+
 void
 runq_add(struct runq *rq, struct thread *td, int flags) {
   check if a kernel thread, set isKernel
@@ -165,6 +171,8 @@ runq_add(struct runq *rq, struct thread *td, int flags) {
 ```
 
 ```
+/* Modified FreeBSD function for assigning threads to a run queue by priority */
+
 void
 runq_add_pri(struct runq *rq, struct thread *td, u_char pri, int flags) {
   check if a kernel thread, set isKernel

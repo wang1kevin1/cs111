@@ -73,7 +73,7 @@ The runtime logs can be viewed in the file ```benchmark_log```.
 
 ## Authors
 
-* **Kevin Wang**
-* **Malcolm Neill**
-* **Nicolette Miller**
-* **Edmund Yu**
+* **Kevin Wang** *(kwang43)*
+* **Malcolm Neill** *(mneill)*
+* **Nicolette Miller** *(nmiller2)*
+* **Edmund Yu** *(eyu9)*
