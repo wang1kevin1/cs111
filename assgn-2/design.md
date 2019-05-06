@@ -18,7 +18,7 @@ any changes will require if/else statements to check if a thread is user or kern
 
 ### Case 2: ULE scheduler with priority queues.
 
-ULE scheduling assigns the process threads to their respoective run queues. 
+ULE scheduling assigns the process threads to their respective run queues. 
 The threads will be inserted into the FIFO queues by priority (simulating a priority queue). 
 
 ```schedcase``` = 2
@@ -35,6 +35,8 @@ User process threads will be assigned to a random run queue.
 The threads will be inserted into the FIFO queues by priority (simulating a priority queue).
 
 ```schedcase``` = 4
+
+<div class="page"/>
 
 ## Design
 
@@ -72,20 +74,22 @@ Assigning of queues will be the same for all cases, with varying results due to 
 If ```schedcase``` is equal to 2 or 4, we will add a thread to its assigned queue, ordered by priority. 
 While the run queue will still use FreeBSD's FIFO, it will simulate a priority queue. 
 Because we will be inserting items throughout the run queue, we will be using linked-lists.
-While we should've used heaps -- O(lg n) -- and implemented an extractMin for choosing a thread to run , 
-linked-lists -- O(n) was easier with the library TAILQ procedures.
+While we should use heaps -- O(lg n) -- and implement an extractMin for choosing a thread to run, 
+linked-lists -- O(n) is probably easier with the library TAILQ procedures.
 
 If a run queue is empty, we will insert the thread at the head. Otherwise, 
 we will cycle through the run queue and compare our threads actual priority against 
 the temporary selected run queue thread's priority.
 
-When comparing, if our thread has a lower priority (bigger value), we will either continue to the next item
-or -- if at the end of the run queue -- insert it after. If our thread has a higher priority (smaller value), 
-we will insert it before the temporarily selected thread.
+When comparing, if our thread has a lower priority (bigger value), 
+we will either continue to the next item or -- if at the end of the run queue -- insert it after. 
+If our thread has a higher priority (smaller value), we will insert it before the temporarily selected thread.
+
+<div class="page"/>
 
 **Benchmark**
 
-The benchmark program used for testing our kernel consists of three parts.
+The benchmark program used for testing our kernel will consist of three parts.
 
 The first is a forkbomb that creates many child processes to consume CPU time. 
 It recursively calls fork() and prints which iteration it is in. 
@@ -103,6 +107,9 @@ We will also use the FreeBSD time command to capture run time.
 * ```real``` is the total elapsed time.
 * ```user``` is the amount of CPU time spent in user mode.
 * ```sys``` is the amount of CPU time spent in kernel mode.
+
+<div class="page"/>
+
 ## Kernel Modifications
 
 ### Data 
@@ -124,6 +131,8 @@ getRandom(void) {
   use system time to set generator seed
   get random value between 0 and 255
   adjust to avoid kernel and interrupt queues
+
+  return random value
 }
 ```
 
@@ -148,6 +157,8 @@ runq_priority_queue(struct rqhead *rqh, struct thread *td, int flags)
   }
 }      
 ```
+
+<div class="page"/>
 
 ```
 /* Modified FreeBSD function for assigning threads to a run queue by priority */
@@ -190,21 +201,23 @@ runq_add_pri(struct runq *rq, struct thread *td, u_char pri, int flags) {
 }
 ```
 
-## Benchmark Analysis
+<div class="page"/>
 
+## Analysis
 
+![alt text](https://i.imgur.com/fFFAebX.png "Benchmark Running Times")
 
+The graph shows the average runtimes in seconds after running the benchmark program on each case. 
+Each benchmark ran 20 times for each of the 4 cases. 
+The results from the benchmark tests did not vary as much as expected, 
+which makes sense if the program stays the same. 
+The slight variations between the cases also confirm beliefs of splatter scheduling 
+decreasing performance and priority queue increasing performance.  
+The benchmark also shows no page faults or swaps happening in any of the tests. 
+The tests could be improved by higher scaling to show bigger differences in the cases, 
+or by adding more functions that respond more to the changes in the scheduler.
 
-
-
-
-
-
-
-
-
-
-
+<div class="page"/>
 
 # Sources
 * "Design and Implementation of the FreeBSD Operating Systems"
@@ -213,5 +226,3 @@ runq_add_pri(struct runq *rq, struct thread *td, u_char pri, int flags) {
 * https://wiki.freebsd.org/AndriyGapon/AvgThreadPriorityRanges
 * https://www.freebsd.org/doc/en/books/handbook/kernelconfig.html
 * https://www.freebsd.org/doc/handbook/kernelconfig/building.html
-
-
