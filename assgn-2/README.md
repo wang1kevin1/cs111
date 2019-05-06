@@ -69,6 +69,11 @@ To run the benchmark tool and get runtime stats:
 make test
 ```
 
+To get more stats:
+```
+time make test
+```
+
 The runtime logs can be viewed in the file ```benchmark_log```.
 
 ## Authors
