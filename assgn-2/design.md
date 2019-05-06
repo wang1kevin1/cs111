@@ -127,6 +127,26 @@ getRandom(void) {
 
 ```
 void
+runq_priority_queue(struct rqhead *rqh, struct thread *td, int flags)
+{
+  if (run queue is empty) {
+    insert thread at head
+  } else {
+    for each temp thread in runqueue {
+      if (temp thread priority <= td priority) {
+        if (temp thread is last thread in queue)
+          insert td after  temp thread
+        else
+          continue through queue
+      }
+      else 
+        insert the thread before temp thread
+  }
+}      
+```
+
+```
+void
 runq_add(struct runq *rq, struct thread *td, int flags) {
   check if a kernel thread, set isKernel
 
@@ -160,26 +180,6 @@ runq_add_pri(struct runq *rq, struct thread *td, u_char pri, int flags) {
   else if (isKernel or schedcase == 1 or 3)
     inserts into queue normally
 }
-```
-
-```
-void
-runq_priority_queue(struct rqhead *rqh, struct thread *td, int flags)
-{
-	if (run queue is empty) {
-    insert thread at head
-  } else {
-    for each temp thread in runqueue {
-      if (temp thread priority <= td priority) {
-        if (temp thread is last thread in queue)
-          insert td after  temp thread
-        else
-          continue through queue
-      }
-      else 
-        insert the thread before temp thread
-  }
-}      
 ```
 
 ## Benchmark Analysis
