@@ -97,7 +97,7 @@ int main() {
       }
       if (i == 1) {
         printf("loop 2 \n");
-        printf("Fib of 30 is: %ld\n", fib(30));
+        printf("Fib of 33 is: %ld\n", fib(33));
       }
       // help from piazza @347
       if (i == 2) {
