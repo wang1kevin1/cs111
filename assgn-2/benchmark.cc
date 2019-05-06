@@ -31,10 +31,10 @@ void squared(int in);
 //https://thispointer.com/c11-how-to-create-vector-of-thread-objects/
 void threadID() {
   int counter = 0;
-  for (int i =0; i < 1000; i++) {
+  for (int i =0; i < 10000; i++) {
     counter++;
   }
-  if (counter > 998) {
+  if (counter > 9998) {
   std::cout << "Current thread ID : " << std::this_thread::get_id() << "\n";
   }
 }
@@ -97,7 +97,7 @@ int main() {
       }
       if (i == 1) {
         printf("loop 2 \n");
-        printf("Fib of 30 is: %ld\n", fib(30));
+        printf("Fib of 33 is: %ld\n", fib(33));
       }
       // help from piazza @347
       if (i == 2) {
@@ -125,10 +125,10 @@ int main() {
       getrusage(RUSAGE_CHILDREN, &use_end);
       end = use_end.ru_stime;
 
-      printf("end stime: %lds, %ldmicro\n", end.tv_sec, end.tv_usec);
+      printf("Currently elapsed stime: %lds, %ldmicro\n", end.tv_sec, end.tv_usec);
 
       end = use_end.ru_utime;
-      printf("end utime: %lds, %ldmicro\n", end.tv_sec, end.tv_usec);
+      printf("Currently elapsed utime: %lds, %ldmicro\n", end.tv_sec, end.tv_usec);
     }
   }
 
