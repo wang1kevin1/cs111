@@ -31,7 +31,7 @@ void squared(int in);
 //https://thispointer.com/c11-how-to-create-vector-of-thread-objects/
 void threadID() {
   int counter = 0;
-  for (int i =0; i < 1000; i++) {
+  for (int i =0; i < 10000; i++) {
     counter++;
   }
   if (counter > 998) {
@@ -125,10 +125,10 @@ int main() {
       getrusage(RUSAGE_CHILDREN, &use_end);
       end = use_end.ru_stime;
 
-      printf("end stime: %lds, %ldmicro\n", end.tv_sec, end.tv_usec);
+      printf("Currently elapsed stime: %lds, %ldmicro\n", end.tv_sec, end.tv_usec);
 
       end = use_end.ru_utime;
-      printf("end utime: %lds, %ldmicro\n", end.tv_sec, end.tv_usec);
+      printf("Currently elapsed utime: %lds, %ldmicro\n", end.tv_sec, end.tv_usec);
     }
   }
 
