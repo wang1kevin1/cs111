@@ -1,0 +1,77 @@
+###### Sun Apr 21 12:26:42 PDT 2019
+
+[FEATURES]
+exit    :Exit
+<       :Input Redirection & File Ops
+>       :Output Redirection & File Ops
+>>      :Append Redirection & File Ops
+|       :Pipes
+>&      :Output Error Redirection
+>>&     :Append Error Redirection
+|&      :Pipe Error Redirection
+cd      :Working Directory
+
+[DESIGN]
+The shell is implemented with an infinite loop within main that breaks on command 'exit' (or ctrl-c).
+
+User input args are read in and parsed externally by lex.l and then sent to the argument interpreter.
+  - The lex.l code used was provided by Prof. Nawab for cs111/winter19/asgn1. As such, infer doesn't
+    mark any errors.
+  - The args are read in as a NULL terminated string array.
+  - The interpreter checks the special characters and sends the args to their
+    individual processing methods to be executed.
+
+Each processing method works by forking a subprocess and executing within to maintain the shell process.
+  - All methods accept the string of args and replace the special character with NULL to mark the
+    end/beginning of each new command.
+  - A fork is called to create a child process.
+      - For simple commands, we simply execute them as a child process.
+      - For I/O Redirection, the files are opened in this child process and duplicated to their 
+        respective I/O file descriptor. Next, the statement is executed and any data going to stdio
+        is redirected to the new file.
+      - For Pipes, a pipe chain is opened and two child subprocesses are forked, each duplicating one end 
+        of the pipe to it's respective I/O file descriptor. 
+        (*duplicated pipes are closed in all processes forked)
+      - For Working Directory, keep track of the root cwd (initial directory in which the shell was started). 
+        Depending on arg count, change the directory.
+  - For the cwd in shell prompt, we simply grab the cwd during each shell loop and 
+    print that out in a user-friendly format.
+  - For Exit, we simply print an exit message and then exit().
+  - For each method, we need to include a wait() in the parent for each child process it has.
+
+For more details, read the line-by-line comments in myshell.c
+
+[STRUCTURES]
+void print_args(char **args)                  /* Print args and their indexes */
+
+void print_args1(char **args)                 /* Print array of args */
+
+void exec_command(char **args)                /* Exec system built-in cmds */
+
+void input_redirect(char **args, int i)       /* Exec a cmd with input redirected from a file */ 
+
+void output_redirect(char **args, int i)      /* Exec a cmd redirecting output to replace a file */
+
+void append_redirect(char **args, int i)      /* Exec a cmd redirecting output to append a file */
+
+void pipes(char **args, int i)                /* Exec a cmd with input redirected from the output of prev cmd */
+
+void output_error(char **args, int i)         /* Exec a cmd redirecting output & error to replace a file */
+
+void append_error(char **args, int i)         /* Exec a cmd redirecting output & error to append a file */
+
+void pipe_error(char **args, int i)           /* Exec a cmd with input redirected from the output & error of prev cmd */
+
+void working_dir(char **args, char *rwd)      /* Changes the working directory */
+
+void interpret_args(char **args, char *rwd)   /* Interprets the list of args */
+
+int main()                                    /* Main shell process */
+
+[SOURCES]
+https://gitlab.soe.ucsc.edu/gitlab/cmps111/winter19-01/kwang43/tree/master/asgn1 (This is my work)
+FreeBSD man pages
+Piazza
+
+
+

@@ -1,0 +1,20 @@
+Team: W's Only
+
+Kevin Wang (kwang43)
+Malcolm Neill (mneill)
+Nicolette Miller (nmiller2)
+Edmund Yu (eyu9)
+
+For assignment 3, Page Replacement, I edited where the inactive and invalid pages are put on the free list. 
+I calculated the page number by first determining the PAGE_SIZE. 
+The PAGE_SIZE allowed me to find the offset becuase 2 to the power of the offset is the PAGE_SIZE. 
+From there I subtracted the value by 32 and shifted it right, giving me the page number. 
+To determine whether the page number was even or odd, I used mod (%) 2 to see if the value is even. 
+If the page number is even, the page gets put at the front of the free list. 
+If the page number is odd, the page gets put at the end of the free list. 
+
+The other members of my group are all wonderful teammates. We were able to easily divide up the tasks for a lighter workload. 
+Each of my team members were able to finish their tasks while effectively communicating what they were working on. 
+We were able to meet up a few times to discuss the code and begin merging all of the parts. 
+All of my teammates were also very willing to lend a helping hand to anyone that needed it. 
+I think our group worked efficiently and well together.
