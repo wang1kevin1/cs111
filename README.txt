@@ -1,11 +1,4 @@
-Team: W's Only
-
-Kevin Wang (kwang43)
-Malcolm Neill (mneill)
-Nicolette Miller (nmiller2)
-Edmund Yu (eyu9)
-
-Write up a few paragraphs describing what you contributed to the
-group effort, and how you’d rate the other members of your group.
-This (one) plain-text (ASCII) file should be submitted via canvas 
-along with your commit ID.
+Assgn-1: Basic FreeBSD shell in C
+Assgn-2: Modified FreeBSD kernel to implement random scheduling
+Assgn-3: Modified FreeBSD kernel to use semi-random paging
+Assgn-4: CryptoFS, filesystem with encryption implemented on FreeBSD using FUSE
